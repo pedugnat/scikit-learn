@@ -145,10 +145,12 @@ from sklearn.model_selection import cross_validate
 import matplotlib.pyplot as plt
 
 scoring = "neg_mean_absolute_percentage_error"
-dropped_result = cross_validate(hist_dropped, X, y, cv=3, scoring=scoring)
-one_hot_result = cross_validate(hist_one_hot, X, y, cv=3, scoring=scoring)
-ordinal_result = cross_validate(hist_ordinal, X, y, cv=3, scoring=scoring)
-native_result = cross_validate(hist_native, X, y, cv=3, scoring=scoring)
+n_cv_folds = 3
+
+dropped_result = cross_validate(hist_dropped, X, y, cv=n_cv_folds, scoring=scoring)
+one_hot_result = cross_validate(hist_one_hot, X, y, cv=n_cv_folds, scoring=scoring)
+ordinal_result = cross_validate(hist_ordinal, X, y, cv=n_cv_folds, scoring=scoring)
+native_result = cross_validate(hist_native, X, y, cv=n_cv_folds, scoring=scoring)
 
 
 def plot_results(figure_title):
@@ -156,7 +158,7 @@ def plot_results(figure_title):
 
     plot_info = [
         ("fit_time", "Fit times (s)", ax1, None),
-        ("test_score", "Mean Absolute Percentage Error", ax2, (0, 0.20)),
+        ("test_score", "Mean Absolute Percentage Error", ax2, (0, 0.22)),
     ]
 
     x, width = np.arange(4), 0.9
@@ -167,11 +169,15 @@ def plot_results(figure_title):
             ordinal_result[key],
             native_result[key],
         ]
+
+        mape = [np.mean(np.abs(item)) for item in items]
+        std_pred = [np.std(item) for item in items]
+
         ax.bar(
-            x,
-            [np.mean(np.abs(item)) for item in items],
-            width,
-            yerr=[np.std(item) for item in items],
+            x=x,
+            height=mape,
+            width=width,
+            yerr=std_pred,
             color=["C0", "C1", "C2", "C3"],
         )
         ax.set(
