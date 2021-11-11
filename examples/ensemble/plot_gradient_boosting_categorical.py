@@ -28,14 +28,17 @@ and categorical features, where the houses' sales prices is the target.
 # -------------------------
 # First, we load the ames housing data as a pandas dataframe. The features
 # are either categorical or numerical:
+import warnings
 from sklearn.datasets import fetch_openml
 
-X, y = fetch_openml(data_id=41211, as_frame=True, return_X_y=True)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=UserWarning)
+    X, y = fetch_openml(data_id=41211, as_frame=True, return_X_y=True)
 
+# take a subset of features of X, both from categorical and numerical columns
 categorical_features = X.select_dtypes(include="category").columns
 numerical_features = X.select_dtypes(include="number").columns
 
-# take a subset of features of X, both from categorical and numerical columns
 k_columns = 10
 columns_subset = list(categorical_features[:k_columns]) + list(
     numerical_features[:k_columns]
@@ -236,10 +239,10 @@ for pipe in (hist_dropped, hist_one_hot, hist_ordinal, hist_native):
         histgradientboostingregressor__max_iter=15,
     )
 
-dropped_result = cross_validate(hist_dropped, X, y, cv=3, scoring=scoring)
-one_hot_result = cross_validate(hist_one_hot, X, y, cv=3, scoring=scoring)
-ordinal_result = cross_validate(hist_ordinal, X, y, cv=3, scoring=scoring)
-native_result = cross_validate(hist_native, X, y, cv=3, scoring=scoring)
+dropped_result = cross_validate(hist_dropped, X, y, cv=n_cv_folds, scoring=scoring)
+one_hot_result = cross_validate(hist_one_hot, X, y, cv=n_cv_folds, scoring=scoring)
+ordinal_result = cross_validate(hist_ordinal, X, y, cv=n_cv_folds, scoring=scoring)
+native_result = cross_validate(hist_native, X, y, cv=n_cv_folds, scoring=scoring)
 
 plot_results("Gradient Boosting on Adult Census (few and small trees)")
 
