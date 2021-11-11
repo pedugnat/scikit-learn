@@ -32,12 +32,21 @@ from sklearn.datasets import fetch_openml
 
 X, y = fetch_openml(data_id=41211, as_frame=True, return_X_y=True)
 
-n_categorical_features = (X.dtypes == "category").sum()
-n_numerical_features = (X.dtypes == "float").sum()
+categorical_features = X.select_dtypes(include="category").columns
+numerical_features = X.select_dtypes(include="number").columns
+
+# take a subset of features of X, both from categorical and numerical columns
+k_columns = 10
+columns_subset = list(categorical_features[:k_columns]) + list(
+    numerical_features[:k_columns]
+)
+
+X = X[columns_subset]
+
 print(f"Number of samples: {X.shape[0]}")
 print(f"Number of features: {X.shape[1]}")
-print(f"Number of categorical features: {n_categorical_features}")
-print(f"Number of numerical features: {n_numerical_features}")
+print(f"Number of categorical features: {k_columns}")
+print(f"Number of numerical features: {k_columns}")
 
 # %%
 # Gradient boosting estimator with dropped categorical features
@@ -53,7 +62,9 @@ from sklearn.compose import make_column_selector
 dropper = make_column_transformer(
     ("drop", make_column_selector(dtype_include="category")), remainder="passthrough"
 )
-hist_dropped = make_pipeline(dropper, HistGradientBoostingRegressor(random_state=42))
+hist_dropped = make_pipeline(
+    dropper, HistGradientBoostingRegressor(max_iter=50, random_state=42)
+)
 
 # %%
 # Gradient boosting estimator with one-hot encoding
@@ -72,7 +83,7 @@ one_hot_encoder = make_column_transformer(
 )
 
 hist_one_hot = make_pipeline(
-    one_hot_encoder, HistGradientBoostingRegressor(random_state=42)
+    one_hot_encoder, HistGradientBoostingRegressor(max_iter=50, random_state=42)
 )
 
 # %%
@@ -94,7 +105,7 @@ ordinal_encoder = make_column_transformer(
 )
 
 hist_ordinal = make_pipeline(
-    ordinal_encoder, HistGradientBoostingRegressor(random_state=42)
+    ordinal_encoder, HistGradientBoostingRegressor(max_iter=50, random_state=42)
 )
 
 # %%
@@ -114,11 +125,11 @@ hist_ordinal = make_pipeline(
 
 # The ordinal encoder will first output the categorical features, and then the
 # continuous (passed-through) features
-categorical_mask = [True] * n_categorical_features + [False] * n_numerical_features
+categorical_mask = [True] * k_columns + [False] * k_columns
 hist_native = make_pipeline(
     ordinal_encoder,
     HistGradientBoostingRegressor(
-        random_state=42, categorical_features=categorical_mask
+        max_iter=50, random_state=42, categorical_features=categorical_mask
     ),
 )
 
