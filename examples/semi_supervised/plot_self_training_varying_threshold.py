@@ -48,14 +48,13 @@ X, y = shuffle(X, y, random_state=42)
 y_true = y.copy()
 total_samples = y.shape[0]
 
-# keep only 50 examples labelled
+# keep only 50 examples labelled, other are set to unlabelled
 y[50:] = -1
 
 base_classifier = SVC(probability=True, gamma=0.001, random_state=42)
 
 x_values = np.arange(0.4, 1.05, 0.05)
 x_values = np.append(x_values, 0.99999)
-print(x_values)
 
 n_samples = x_values.shape[0]
 scores = np.empty((n_samples, n_splits))
