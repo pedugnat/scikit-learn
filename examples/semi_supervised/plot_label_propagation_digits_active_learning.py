@@ -45,12 +45,13 @@ n_labeled_points = 40
 max_iterations = 5
 
 unlabeled_indices = np.arange(n_total_samples)[n_labeled_points:]
-f = plt.figure()
+fig = plt.figure()
 
 for i in range(max_iterations):
     if len(unlabeled_indices) == 0:
         print("No unlabeled items left to label.")
         break
+
     y_train = np.copy(y)
     y_train[unlabeled_indices] = -1
 
@@ -62,7 +63,7 @@ for i in range(max_iterations):
 
     cm = confusion_matrix(true_labels, predicted_labels, labels=lp_model.classes_)
 
-    print("Iteration %i %s" % (i, 70 * "_"))
+    print(f"Iteration {i} {'_' * 70}")
     print(
         "Label Spreading model: %d labeled & %d unlabeled (%d total)"
         % (n_labeled_points, n_total_samples - n_labeled_points, n_total_samples)
@@ -70,8 +71,7 @@ for i in range(max_iterations):
 
     print(classification_report(true_labels, predicted_labels))
 
-    print("Confusion matrix")
-    print(cm)
+    print(f"Confusion matrix\n{cm}")
 
     # compute the entropies of transduced label distributions
     pred_entropies = stats.distributions.entropy(lp_model.label_distributions_.T)
@@ -87,7 +87,7 @@ for i in range(max_iterations):
 
     # for more than 5 iterations, visualize the gain only on the first 5
     if i < 5:
-        f.text(
+        fig.text(
             0.05,
             (1 - (i + 1) * 0.183),
             "model %d\n\nfit with\n%d labels" % ((i + 1), i * 5 + 10),
@@ -98,7 +98,7 @@ for i in range(max_iterations):
 
         # for more than 5 iterations, visualize the gain only on the first 5
         if i < 5:
-            sub = f.add_subplot(5, 5, index + 1 + (5 * i))
+            sub = fig.add_subplot(5, 5, index + 1 + (5 * i))
             sub.imshow(image, cmap=plt.cm.gray_r, interpolation="none")
             sub.set_title(
                 "predict: %i\ntrue: %i"
@@ -114,7 +114,7 @@ for i in range(max_iterations):
     unlabeled_indices = np.delete(unlabeled_indices, delete_indices)
     n_labeled_points += len(uncertainty_index)
 
-f.suptitle(
+fig.suptitle(
     "Active learning with Label Propagation.\nRows show 5 most "
     "uncertain labels to learn with the next model.",
     y=1.15,

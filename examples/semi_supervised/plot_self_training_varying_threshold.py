@@ -5,8 +5,8 @@ Effect of varying threshold for self-training
 
 This example illustrates the effect of a varying threshold on self-training.
 The `breast_cancer` dataset is loaded, and labels are deleted such that only 50
-out of 569 samples have labels. A `SelfTrainingClassifier` is fitted on this
-dataset, with varying thresholds.
+out of 569 samples have labels. A :class:`sklearn.semi_supervised.
+SelfTrainingClassifier` is fitted on this dataset, with varying thresholds.
 
 The upper graph shows the amount of labeled samples that the classifier has
 available by the end of fit, and the accuracy of the classifier. The lower
@@ -46,18 +46,23 @@ n_splits = 3
 X, y = datasets.load_breast_cancer(return_X_y=True)
 X, y = shuffle(X, y, random_state=42)
 y_true = y.copy()
-y[50:] = -1
 total_samples = y.shape[0]
+
+# keep only 50 examples labelled
+y[50:] = -1
 
 base_classifier = SVC(probability=True, gamma=0.001, random_state=42)
 
 x_values = np.arange(0.4, 1.05, 0.05)
 x_values = np.append(x_values, 0.99999)
-scores = np.empty((x_values.shape[0], n_splits))
-amount_labeled = np.empty((x_values.shape[0], n_splits))
-amount_iterations = np.empty((x_values.shape[0], n_splits))
+print(x_values)
 
-for (i, threshold) in enumerate(x_values):
+n_samples = x_values.shape[0]
+scores = np.empty((n_samples, n_splits))
+amount_labeled = np.empty((n_samples, n_splits))
+amount_iterations = np.empty((n_samples, n_splits))
+
+for i, threshold in enumerate(x_values):
     self_training_clf = SelfTrainingClassifier(base_classifier, threshold=threshold)
 
     # We need manual cross validation so that we don't treat -1 as a separate

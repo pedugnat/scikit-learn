@@ -16,20 +16,17 @@ import os
 import numpy as np
 
 from sklearn.datasets import fetch_20newsgroups
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.semi_supervised import SelfTrainingClassifier
-from sklearn.semi_supervised import LabelSpreading
+from sklearn.semi_supervised import SelfTrainingClassifier, LabelSpreading
 from sklearn.metrics import f1_score
 
 data = fetch_20newsgroups(subset="train", categories=None)
 print("%d documents" % len(data.filenames))
-print("%d categories" % len(data.target_names))
-print()
+print("%d categories" % len(data.target_names), end="\n")
 
 # Parameters
 sdg_params = dict(alpha=1e-5, penalty="l2", loss="log")
@@ -56,7 +53,7 @@ ls_pipeline = Pipeline(
     [
         ("vect", CountVectorizer(**vectorizer_params)),
         ("tfidf", TfidfTransformer()),
-        # LabelSpreading does not support dense matrices
+        # LabelSpreading does not support sparse matrices
         ("todense", FunctionTransformer(lambda x: x.todense())),
         ("clf", LabelSpreading()),
     ]
@@ -64,16 +61,18 @@ ls_pipeline = Pipeline(
 
 
 def eval_and_print_metrics(clf, X_train, y_train, X_test, y_test):
-    print("Number of training samples:", len(X_train))
-    print("Unlabeled samples in training set:", sum(1 for x in y_train if x == -1))
+    print(
+        f"Number of training samples: {len(X_train)}",
+    )
+    print(f"Unlabeled samples in training set: {np.sum(y_train == -1)}")
+
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
     print(
         "Micro-averaged F1 score on test set: %0.3f"
         % f1_score(y_test, y_pred, average="micro")
     )
-    print("-" * 10)
-    print()
+    print("-" * 10, end="\n")
 
 
 if __name__ == "__main__":

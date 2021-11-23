@@ -4,8 +4,8 @@ Label Propagation digits: Demonstrating performance
 ===================================================
 
 This example demonstrates the power of semisupervised learning by
-training a Label Spreading model to classify handwritten digits
-with sets of very few labels.
+training a :class:`sklearn.semi_supervised.LabelSpreading` model
+to classify handwritten digits with sets of very few labels.
 
 The handwritten digit dataset has 1797 total points. The model will
 be trained using all points, but only 30 will be labeled. Results
@@ -66,8 +66,7 @@ print(
 
 print(classification_report(true_labels, predicted_labels))
 
-print("Confusion matrix")
-print(cm)
+print(f"Confusion matrix\n{cm}")
 
 # #############################################################################
 # Calculate uncertainty values for each transduced distribution
@@ -79,11 +78,11 @@ uncertainty_index = np.argsort(pred_entropies)[-10:]
 
 # #############################################################################
 # Plot
-f = plt.figure(figsize=(7, 5))
+fig = plt.figure(figsize=(7, 5))
 for index, image_index in enumerate(uncertainty_index):
     image = images[image_index]
 
-    sub = f.add_subplot(2, 5, index + 1)
+    sub = fig.add_subplot(2, 5, index + 1)
     sub.imshow(image, cmap=plt.cm.gray_r)
     plt.xticks([])
     plt.yticks([])
@@ -91,5 +90,5 @@ for index, image_index in enumerate(uncertainty_index):
         "predict: %i\ntrue: %i" % (lp_model.transduction_[image_index], y[image_index])
     )
 
-f.suptitle("Learning with small amount of labeled data")
+fig.suptitle("Learning with small amount of labeled data")
 plt.show()

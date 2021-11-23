@@ -3,14 +3,16 @@
 Decision boundary of semi-supervised classifiers versus SVM on the Iris dataset
 ===============================================================================
 
-A comparison for the decision boundaries generated on the iris dataset
-by Label Spreading, Self-training and SVM.
+A comparison for the decision boundaries generated on the :ref:`iris_dataset`
+by :class:`sklearn.semi_supervised.LabelSpreading`, :class:`sklearn.semi_supervised.
+SelfTrainingClassifier` and :module:`sklearn.svm`.
 
-This example demonstrates that Label Spreading and Self-training can learn
-good boundaries even when small amounts of labeled data are available.
+This example demonstrates that :class:`LabelSpreading` and :class:`sklearn.
+semi_supervised.SelfTrainingClassifier` can learn good boundaries even when
+small amounts of labeled data are available.
 
 Note that Self-training with 100% of the data is omitted as it is functionally
-identical to training the SVC on 100% of the data.
+identical to training the :class:`sklearn.svm.SVC` on 100% of the data.
 
 """
 
@@ -22,9 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.svm import SVC
-from sklearn.semi_supervised import LabelSpreading
-from sklearn.semi_supervised import SelfTrainingClassifier
-
+from sklearn.semi_supervised import LabelSpreading, SelfTrainingClassifier
 
 iris = datasets.load_iris()
 

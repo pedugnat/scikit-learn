@@ -3,8 +3,9 @@
 Label Propagation learning a complex structure
 ==============================================
 
-Example of LabelPropagation learning a complex internal structure
-to demonstrate "manifold learning". The outer circle should be
+Example of :class:`sklearn.semi_supervised.LabelPropagation`
+learning a complex internal structure to demonstrate
+"manifold learning". The outer circle should be
 labeled "red" and the inner circle "blue". Because both label groups
 lie inside their own distinct shape, we can see that the labels
 propagate correctly around the circle.
