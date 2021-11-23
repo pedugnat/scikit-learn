@@ -71,7 +71,7 @@ for i in range(max_iterations):
 
     print(classification_report(true_labels, predicted_labels))
 
-    print(f"Confusion matrix\n{cm}")
+    print("Confusion matrix", cm, sep="\n")
 
     # compute the entropies of transduced label distributions
     pred_entropies = stats.distributions.entropy(lp_model.label_distributions_.T)
